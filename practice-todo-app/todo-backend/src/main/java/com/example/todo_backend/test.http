@@ -1,0 +1,28 @@
+### 1. ユーザー登録
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###  2. ログイン
+POST http://localhost:8080/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=testuser&password=password123
+
+### 3. タスク一覧取得（認証必要）
+GET http://localhost:8080/api/tasks
+Cookie: JSESSIONID=E5DF2A2674032D03B3AF7DAEFAA0D150
+
+### 4. タスク作成（認証必要）
+POST http://localhost:8080/api/tasks
+Content-Type: application/json
+Cookie: JSESSIONID=E5DF2A2674032D03B3AF7DAEFAA0D150
+
+{
+  "title": "Spring Securityを学ぶ",
+  "detail": "認証フローを理解する"
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(printf '{\"title\":\"テストタスク\",\"detail\":\"詳細\"}')",
+      "Bash(xxd)",
+      "Bash(printf '{\"title\":\"テスト\",\"detail\":\"詳細\"}')",
+      "Read(//tmp/**)",
+      "Bash(npm run:*)",
+      "Bash(java:*)",
+      "Bash(taskkill //F //IM java.exe)",
+      "Bash(./mvnw package:*)"
+    ]
+  }
+}
