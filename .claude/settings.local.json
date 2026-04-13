@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Users/yeswe/portfolio\" status)",
+      "Bash(git -C \"c:/Users/yeswe/portfolio\" add -A)",
+      "Bash(git -C \"c:/Users/yeswe/portfolio\" status --short)"
+    ]
+  }
+}
