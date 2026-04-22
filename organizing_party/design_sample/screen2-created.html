@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作成完了 — 飲み会幹事アプリ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #F0EDE8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+</style>
+</head>
+<body>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const T = {
+  accent: '#E8603C',
+  accentLight: '#FDF1ED',
+  text: '#1A1814',
+  textSub: '#6B6560',
+  textMuted: '#A8A29C',
+  border: '#E4DDD6',
+  surface: '#FFFFFF',
+  bg: '#FAF8F5',
+};
+
+const DUMMY_URL = 'https://nomikai.app/e/tk_8fGx2mKpQr';
+
+/* ── Check animation ─────────────────────────── */
+function CheckCircle({ visible }) {
+  return (
+    <div style={{
+      width: 80, height: 80, borderRadius: 40,
+      background: visible ? T.accent : 'transparent',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      transition: 'background 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+      boxShadow: visible ? '0 8px 24px rgba(232,96,60,0.35)' : 'none',
+    }}>
+      <svg width="38" height="28" viewBox="0 0 38 28" fill="none"
+        style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s 0.2s' }}>
+        <path d="M3 14L13 24L35 3"
+          stroke="white" strokeWidth="4.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          strokeDasharray="52"
+          strokeDashoffset={visible ? 0 : 52}
+          style={{ transition: 'stroke-dashoffset 0.4s 0.25s ease-out' }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+/* ── URL Box ─────────────────────────────────── */
+function URLBox({ url }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    // In prototype, just simulate copy
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div style={{
+      background: T.bg, borderRadius: 12, border: `1.5px solid ${T.border}`,
+      overflow: 'hidden',
+    }}>
+      {/* URL text */}
+      <div style={{
+        padding: '12px 14px',
+        fontSize: 13, color: T.textSub, fontFamily: 'monospace',
+        wordBreak: 'break-all', lineHeight: 1.6,
+        borderBottom: `1px solid ${T.border}`,
+      }}>
+        {url}
+      </div>
+
+      {/* Copy button */}
+      <button
+        onClick={handleCopy}
+        style={{
+          width: '100%', height: 44, border: 'none',
+          background: copied ? '#EBF7EE' : T.accentLight,
+          color: copied ? '#2D8B4E' : T.accent,
+          fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          fontFamily: 'Noto Sans JP, sans-serif',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          transition: 'all 0.2s',
+        }}
+      >
+        {copied ? (
+          <>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l3.5 3.5L12 3" stroke="#2D8B4E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            コピーしました
+          </>
+        ) : (
+          <>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="4" y="4" width="9" height="9" rx="2" stroke={T.accent} strokeWidth="1.6"/>
+              <path d="M1 10V2a1 1 0 011-1h8" stroke={T.accent} strokeWidth="1.6" strokeLinecap="round"/>
+            </svg>
+            URLをコピー
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
+
+/* ── Main Screen ─────────────────────────────── */
+function CreatedScreen() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div style={{
+      background: T.bg, minHeight: '100%',
+      display: 'flex', flexDirection: 'column',
+      padding: '0 0 40px',
+    }}>
+
+      {/* Top accent band */}
+      <div style={{
+        background: T.accent, height: 4,
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 0.5s 0.1s',
+      }} />
+
+      {/* Hero area */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        padding: '48px 24px 36px', gap: 16,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.5s 0.1s, transform 0.5s 0.1s',
+      }}>
+        <CheckCircle visible={visible} />
+
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>
+            イベントを作成しました
+          </div>
+          <div style={{ fontSize: 14, color: T.textSub, lineHeight: 1.7 }}>
+            以下のURLを参加者に共有して<br />回答を集めましょう
+          </div>
+        </div>
+      </div>
+
+      {/* URL section */}
+      <div style={{
+        padding: '0 16px',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.5s 0.25s, transform 0.5s 0.25s',
+      }}>
+        <div style={{
+          background: T.surface, borderRadius: 16, padding: '16px 14px',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', marginBottom: 10 }}>
+            参加者用URL
+          </div>
+          <URLBox url={DUMMY_URL} />
+
+          {/* Share hint */}
+          <div style={{
+            marginTop: 12, padding: '10px 12px',
+            background: '#FFF8F0', borderRadius: 8,
+            border: '1px solid #FFE0CC',
+            display: 'flex', gap: 8, alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+            <span style={{ fontSize: 12, color: '#A0541C', lineHeight: 1.6 }}>
+              このURLを参加者に共有してください。URLを知っている人なら誰でも回答できます。
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Event summary */}
+      <div style={{
+        padding: '12px 16px 0',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.5s 0.35s, transform 0.5s 0.35s',
+      }}>
+        <div style={{
+          background: T.surface, borderRadius: 16, padding: '14px',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', marginBottom: 10 }}>
+            作成したイベント
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {[
+              { label: 'イベント名', value: '3月の飲み会' },
+              { label: '回答期限', value: '2025年3月10日' },
+              { label: '日時候補', value: '3件' },
+              { label: '候補店舗', value: '2件' },
+            ].map(row => (
+              <div key={row.label} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '6px 0', borderBottom: `1px solid ${T.border}`,
+              }}>
+                <span style={{ fontSize: 13, color: T.textSub }}>{row.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Spacer */}
+      <div style={{ flex: 1, minHeight: 24 }} />
+
+      {/* CTA */}
+      <div style={{
+        padding: '0 16px',
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 0.5s 0.45s',
+      }}>
+        <button style={{
+          width: '100%', height: 52, borderRadius: 14,
+          background: T.accent, border: 'none', color: '#fff',
+          fontSize: 16, fontWeight: 700, cursor: 'pointer',
+          fontFamily: 'Noto Sans JP, sans-serif',
+          boxShadow: '0 4px 16px rgba(232,96,60,0.35)',
+        }}>
+          ダッシュボードへ
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Wrapper ─────────────────────────────────── */
+function App() {
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', padding:24 }}>
+      <IOSDevice width={390} height={844} dark={false}>
+        <CreatedScreen />
+      </IOSDevice>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<div id="root"></div>
+</body>
+</html>

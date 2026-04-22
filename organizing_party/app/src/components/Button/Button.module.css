@@ -1,0 +1,53 @@
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: var(--h-cta);
+  border-radius: var(--radius-cta);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn:active {
+  opacity: 0.8;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* variant: primary */
+.primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(232, 96, 60, 0.35);
+}
+
+/* variant: dark */
+.dark {
+  background: var(--text);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(26, 24, 20, 0.25);
+}
+
+/* variant: ghost */
+.ghost {
+  background: transparent;
+  color: var(--text-sub);
+  border: 1.5px solid var(--border);
+  box-shadow: none;
+}
+
+/* variant: danger */
+.danger {
+  background: var(--danger);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(232, 64, 64, 0.3);
+}

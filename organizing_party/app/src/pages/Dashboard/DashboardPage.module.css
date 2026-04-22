@@ -1,0 +1,50 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: 56px 20px 0;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.eventTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.tabBar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabBtn {
+  flex: 1;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tabBtn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+}

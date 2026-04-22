@@ -1,0 +1,18 @@
+.banner {
+  background: var(--accent);
+  padding: 14px 16px;
+  flex-shrink: 0;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.deadline {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+}

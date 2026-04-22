@@ -1,0 +1,55 @@
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-input);
+  border: 1.5px dashed var(--border);
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transition: all 0.15s;
+}
+
+.addBtn.enabled {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.addBtn.enabled:active {
+  opacity: 0.8;
+}
+
+.removeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F5F0ED;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.removeBtn:hover {
+  background: var(--danger-light);
+}
+
+.removeBtn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-sub);
+}
+
+.removeBtn:hover svg {
+  color: var(--danger);
+}

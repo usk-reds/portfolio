@@ -1,0 +1,49 @@
+.input {
+  width: 100%;
+  height: var(--h-input);
+  padding: 0 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.input.error {
+  border-color: var(--danger);
+}
+
+.errorMsg {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.wrap {
+  position: relative;
+}
+
+.toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}

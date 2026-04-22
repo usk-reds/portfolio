@@ -1,0 +1,27 @@
+.circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.circle.sm {
+  width: 64px;
+  height: 64px;
+}
+
+.check {
+  stroke-dasharray: 52;
+  stroke-dashoffset: 52;
+  animation: checkReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+}
+
+@keyframes checkReveal {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>イベント作成 — 飲み会幹事アプリ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #F0EDE8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  :root {
+    --accent: #E8603C;
+    --accent-light: #FDF1ED;
+    --text: #1A1814;
+    --text-sub: #6B6560;
+    --text-muted: #A8A29C;
+    --border: #E4DDD6;
+    --surface: #FFFFFF;
+    --bg: #FAF8F5;
+    --danger: #E84040;
+  }
+</style>
+</head>
+<body>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+/* ── Tokens ─────────────────────────────────── */
+const T = {
+  accent: '#E8603C',
+  accentLight: '#FDF1ED',
+  text: '#1A1814',
+  textSub: '#6B6560',
+  textMuted: '#A8A29C',
+  border: '#E4DDD6',
+  surface: '#FFFFFF',
+  bg: '#FAF8F5',
+};
+
+/* ── Small components ────────────────────────── */
+
+function Label({ children, required }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:6 }}>
+      <span style={{ fontSize:13, fontWeight:600, color:T.textSub, letterSpacing:'0.04em' }}>{children}</span>
+      {required && <span style={{ fontSize:11, color:T.accent, fontWeight:700 }}>必須</span>}
+    </div>
+  );
+}
+
+function Input({ placeholder, type='text', value, onChange, style={} }) {
+  const [focus, setFocus] = useState(false);
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
+      style={{
+        width:'100%', height:44, borderRadius:10, border:`1.5px solid ${focus ? T.accent : T.border}`,
+        padding:'0 12px', fontSize:15, color:T.text, background:T.surface,
+        outline:'none', fontFamily:'Noto Sans JP, sans-serif',
+        transition:'border-color 0.15s',
+        ...style,
+      }}
+    />
+  );
+}
+
+function DateTimeInput({ value, onChange }) {
+  const [focus, setFocus] = useState(false);
+  return (
+    <input
+      type="datetime-local"
+      value={value}
+      onChange={onChange}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
+      style={{
+        width:'100%', height:44, borderRadius:10, border:`1.5px solid ${focus ? T.accent : T.border}`,
+        padding:'0 12px', fontSize:14, color: value ? T.text : T.textMuted,
+        background:T.surface, outline:'none',
+        fontFamily:'Noto Sans JP, sans-serif', transition:'border-color 0.15s',
+      }}
+    />
+  );
+}
+
+function Section({ children }) {
+  return (
+    <div style={{ background:T.surface, borderRadius:16, padding:'16px 14px', display:'flex', flexDirection:'column', gap:14 }}>
+      {children}
+    </div>
+  );
+}
+
+function SectionTitle({ children }) {
+  return (
+    <div style={{ fontSize:12, fontWeight:700, color:T.textMuted, letterSpacing:'0.08em', textTransform:'uppercase', paddingBottom:2, borderBottom:`1px solid ${T.border}` }}>
+      {children}
+    </div>
+  );
+}
+
+function RemoveBtn({ onClick }) {
+  return (
+    <button onClick={onClick} style={{
+      width:28, height:28, borderRadius:14, border:'none', background:'#F5F0ED',
+      color:T.textMuted, fontSize:18, cursor:'pointer', flexShrink:0,
+      display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1,
+    }}>×</button>
+  );
+}
+
+function AddBtn({ onClick, disabled, label }) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      width:'100%', height:40, borderRadius:10,
+      border:`1.5px dashed ${disabled ? T.border : T.accent}`,
+      background: disabled ? 'transparent' : T.accentLight,
+      color: disabled ? T.textMuted : T.accent,
+      fontSize:14, fontWeight:600, cursor: disabled ? 'default' : 'pointer',
+      fontFamily:'Noto Sans JP, sans-serif',
+      transition:'all 0.15s',
+    }}>
+      ＋ {label}
+    </button>
+  );
+}
+
+/* ── Main App ────────────────────────────────── */
+
+function CreateEventScreen() {
+  // Basic fields
+  const [name, setName] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [organizerName, setOrganizerName] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+
+  // Date candidates
+  const [dates, setDates] = useState([{ id:1, value:'' }]);
+  const addDate = () => {
+    if (dates.length < 3) setDates(d => [...d, { id: Date.now(), value:'' }]);
+  };
+  const removeDate = (id) => setDates(d => d.filter(x => x.id !== id));
+  const updateDate = (id, value) => setDates(d => d.map(x => x.id===id ? {...x,value} : x));
+
+  // Venue candidates
+  const [venues, setVenues] = useState([{ id:1, name:'', url:'', memo:'', plans:[] }]);
+  const addVenue = () => {
+    if (venues.length < 3) setVenues(v => [...v, { id: Date.now(), name:'', url:'', memo:'', plans:[] }]);
+  };
+  const removeVenue = (id) => setVenues(v => v.filter(x => x.id !== id));
+  const updateVenue = (id, field, value) => setVenues(v => v.map(x => x.id===id ? {...x,[field]:value} : x));
+  const addPlan = (venueId) => setVenues(v => v.map(x => x.id===venueId ? {...x, plans:[...x.plans, { id:Date.now(), value:'' }]} : x));
+  const removePlan = (venueId, planId) => setVenues(v => v.map(x => x.id===venueId ? {...x, plans:x.plans.filter(p=>p.id!==planId)} : x));
+  const updatePlan = (venueId, planId, value) => setVenues(v => v.map(x => x.id===venueId ? {...x, plans:x.plans.map(p=>p.id===planId?{...p,value}:p)} : x));
+
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const validate = () => {
+    const e = {};
+    if (!name.trim()) e.name = '必須項目です';
+    if (!password.trim()) e.password = '必須項目です';
+    venues.forEach((v, i) => {
+      if (!v.name.trim()) e[`venue_${v.id}`] = '店名は必須です';
+    });
+    return e;
+  };
+
+  const handleSubmit = () => {
+    const e = validate();
+    setErrors(e);
+    setSubmitted(true);
+    if (Object.keys(e).length === 0) {
+      alert('イベントを作成しました！（プロトタイプ）');
+    }
+  };
+
+  return (
+    <div style={{ background:T.bg, minHeight:'100%', paddingBottom:80 }}>
+
+      {/* Header */}
+      <div style={{
+        background:T.surface, borderBottom:`1px solid ${T.border}`,
+        padding:'56px 16px 14px',
+        position:'sticky', top:0, zIndex:10,
+      }}>
+        <div style={{ fontSize:22, fontWeight:700, color:T.text }}>イベント作成</div>
+      </div>
+
+      <div style={{ padding:'16px 14px', display:'flex', flexDirection:'column', gap:12 }}>
+
+        {/* 基本情報 */}
+        <Section>
+          <SectionTitle>基本情報</SectionTitle>
+
+          <div>
+            <Label required>イベント名</Label>
+            <Input
+              placeholder="例：3月の飲み会"
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+            {errors.name && <div style={{ fontSize:12, color:'#E84040', marginTop:4 }}>{errors.name}</div>}
+          </div>
+
+          <div>
+            <Label>回答期限</Label>
+            <input
+              type="date"
+              value={deadline}
+              onChange={e => setDeadline(e.target.value)}
+              style={{
+                width:'100%', height:44, borderRadius:10,
+                border:`1.5px solid ${T.border}`, padding:'0 12px',
+                fontSize:14, color: deadline ? T.text : T.textMuted,
+                background:T.surface, outline:'none',
+                fontFamily:'Noto Sans JP, sans-serif',
+              }}
+            />
+          </div>
+
+          <div>
+            <Label>幹事名</Label>
+            <Input
+              placeholder="例：田中（任意）"
+              value={organizerName}
+              onChange={e => setOrganizerName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label required>幹事パスワード</Label>
+            <div style={{ position:'relative' }}>
+              <Input
+                type={showPass ? 'text' : 'password'}
+                placeholder="確定操作に使用します"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{ paddingRight:44 }}
+              />
+              <button
+                onClick={() => setShowPass(s => !s)}
+                style={{
+                  position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                  background:'none', border:'none', cursor:'pointer', padding:4,
+                  color:T.textMuted, fontSize:13,
+                }}
+              >{showPass ? '隠す' : '表示'}</button>
+            </div>
+            {errors.password && <div style={{ fontSize:12, color:'#E84040', marginTop:4 }}>{errors.password}</div>}
+          </div>
+        </Section>
+
+        {/* 日時候補 */}
+        <Section>
+          <SectionTitle>日時候補</SectionTitle>
+
+          {dates.map((d, i) => (
+            <div key={d.id}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                <span style={{ fontSize:13, fontWeight:600, color:T.textSub }}>候補 {i+1}</span>
+                {dates.length > 1 && <RemoveBtn onClick={() => removeDate(d.id)} />}
+              </div>
+              <DateTimeInput
+                value={d.value}
+                onChange={e => updateDate(d.id, e.target.value)}
+              />
+            </div>
+          ))}
+
+          <AddBtn
+            onClick={addDate}
+            disabled={dates.length >= 3}
+            label="候補を追加"
+          />
+          {dates.length >= 3 && (
+            <div style={{ fontSize:12, color:T.textMuted, textAlign:'center', marginTop:-8 }}>最大3件まで追加できます</div>
+          )}
+        </Section>
+
+        {/* 候補店舗 */}
+        <Section>
+          <SectionTitle>候補店舗</SectionTitle>
+
+          {venues.map((v, i) => (
+            <div key={v.id} style={{
+              background:T.bg, borderRadius:12, padding:'12px 10px',
+              display:'flex', flexDirection:'column', gap:8,
+            }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <span style={{ fontSize:13, fontWeight:600, color:T.textSub }}>店舗 {i+1}</span>
+                {venues.length > 1 && <RemoveBtn onClick={() => removeVenue(v.id)} />}
+              </div>
+
+              <div>
+                <Label required>店名</Label>
+                <Input
+                  placeholder="例：炭火焼き鳥 とり吉"
+                  value={v.name}
+                  onChange={e => updateVenue(v.id, 'name', e.target.value)}
+                />
+                {errors[`venue_${v.id}`] && (
+                  <div style={{ fontSize:12, color:'#E84040', marginTop:4 }}>{errors[`venue_${v.id}`]}</div>
+                )}
+
+                {/* プラン */}
+                {v.plans.length > 0 && (
+                  <div style={{ marginTop:10, display:'flex', flexDirection:'column', gap:6 }}>
+                    {v.plans.map((plan, pi) => (
+                      <div key={plan.id} style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <span style={{ fontSize:12, color:T.textMuted, flexShrink:0, minWidth:48 }}>プラン{pi+1}</span>
+                        <input
+                          value={plan.value}
+                          onChange={e => updatePlan(v.id, plan.id, e.target.value)}
+                          placeholder="例：2時間飲み放題 ¥3,500"
+                          style={{
+                            flex:1, height:38, borderRadius:8,
+                            border:`1.5px solid ${T.border}`, padding:'0 10px',
+                            fontSize:13, color:T.text, background:T.surface,
+                            outline:'none', fontFamily:'Noto Sans JP, sans-serif',
+                          }}
+                        />
+                        <button onClick={() => removePlan(v.id, plan.id)} style={{
+                          width:26, height:26, borderRadius:13, border:'none',
+                          background:'#F5F0ED', color:T.textMuted,
+                          fontSize:16, cursor:'pointer', flexShrink:0,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                        }}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button onClick={() => addPlan(v.id)} style={{
+                  marginTop:8, height:34, width:'100%', borderRadius:8,
+                  border:`1.5px dashed ${T.border}`,
+                  background:'transparent', color:T.textMuted,
+                  fontSize:13, cursor:'pointer', fontFamily:'Noto Sans JP, sans-serif',
+                }}>
+                  ＋ プランを追加
+                </button>
+              </div>
+
+              <div>
+                <Label>URL・住所</Label>
+                <Input
+                  placeholder="https:// または住所を入力"
+                  value={v.url}
+                  onChange={e => updateVenue(v.id, 'url', e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>備考</Label>
+                <Input
+                  placeholder="個室あり、2時間飲み放題 など"
+                  value={v.memo}
+                  onChange={e => updateVenue(v.id, 'memo', e.target.value)}
+                />
+              </div>
+            </div>
+          ))}
+
+          <AddBtn
+            onClick={addVenue}
+            disabled={venues.length >= 3}
+            label="店舗を追加"
+          />
+          {venues.length >= 3 && (
+            <div style={{ fontSize:12, color:T.textMuted, textAlign:'center', marginTop:-8 }}>最大3件まで追加できます</div>
+          )}
+        </Section>
+
+      </div>
+
+      {/* Fixed CTA */}
+      <div style={{
+        position:'sticky', bottom:0, left:0, right:0,
+        padding:'10px 14px 24px',
+        background:'linear-gradient(to bottom, transparent, #FAF8F5 40%)',
+      }}>
+        <button
+          onClick={handleSubmit}
+          style={{
+            width:'100%', height:52, borderRadius:14,
+            background:T.accent, border:'none', color:'#fff',
+            fontSize:16, fontWeight:700, cursor:'pointer',
+            fontFamily:'Noto Sans JP, sans-serif',
+            boxShadow:'0 4px 16px rgba(232,96,60,0.35)',
+            transition:'opacity 0.15s, transform 0.1s',
+          }}
+          onMouseDown={e => e.currentTarget.style.opacity='0.85'}
+          onMouseUp={e => e.currentTarget.style.opacity='1'}
+        >
+          作成する
+        </button>
+      </div>
+
+    </div>
+  );
+}
+
+/* ── Wrapper in iOS Frame ────────────────────── */
+function App() {
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', padding:24 }}>
+      <IOSDevice width={390} height={844} dark={false}>
+        <CreateEventScreen />
+      </IOSDevice>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<div id="root"></div>
+</body>
+</html>

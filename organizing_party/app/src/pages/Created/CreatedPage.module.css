@@ -1,0 +1,184 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topBand {
+  height: 4px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 0 8px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.hero.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.urlCard {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+}
+
+.urlCard.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.urlLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.urlBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 10px 12px;
+}
+
+.urlText {
+  flex: 1;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copyBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-sub);
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.copyBtn.copied {
+  background: var(--success-light);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.hintBox {
+  background: var(--hint-bg);
+  border: 1px solid var(--hint-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--hint-text);
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s ease 0.25s, transform 0.3s ease 0.25s;
+}
+
+.hintBox.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.summaryCard {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s ease 0.35s, transform 0.3s ease 0.35s;
+}
+
+.summaryCard.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.summaryTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.summaryRow {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.summaryRow:last-child {
+  border-bottom: none;
+}
+
+.summaryKey {
+  color: var(--text-sub);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 72px;
+}
+
+.summaryVal {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px 32px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 40%);
+}
